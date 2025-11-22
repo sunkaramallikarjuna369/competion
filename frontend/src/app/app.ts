@@ -32,7 +32,7 @@ export class App {
   wordCountSimplified = 0;
   readingLevel = '';
   
-  private apiUrl = 'http://localhost:8000';
+  private apiUrl = 'https://app-ztsetvxb.fly.dev';
   
   levels = [
     { value: 'basic', label: 'Basic', description: 'Elementary (Ages 8-10)' },
