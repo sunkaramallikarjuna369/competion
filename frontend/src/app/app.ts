@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -56,7 +56,11 @@ export class App {
     }
   ];
   
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private zone: NgZone,
+    private cdr: ChangeDetectorRef
+  ) {}
   
   simplifyText() {
     if (!this.inputText.trim()) {
@@ -83,15 +87,21 @@ export class App {
     )
     .subscribe({
       next: (response) => {
-        this.simplifiedText = response.simplified_text;
-        this.wordCountOriginal = response.word_count_original;
-        this.wordCountSimplified = response.word_count_simplified;
-        this.readingLevel = response.reading_level;
-        this.showResult = true;
+        this.zone.run(() => {
+          this.simplifiedText = response.simplified_text;
+          this.wordCountOriginal = response.word_count_original;
+          this.wordCountSimplified = response.word_count_simplified;
+          this.readingLevel = response.reading_level;
+          this.showResult = true;
+          this.cdr.detectChanges();
+        });
       },
       error: (err: any) => {
-        this.error = err?.error?.detail || 'Failed to simplify text. Please check if the backend is running and OpenAI API key is configured.';
-        console.error('Error:', err);
+        this.zone.run(() => {
+          this.error = err?.error?.detail || 'Failed to simplify text. Please check if the backend is running and OpenAI API key is configured.';
+          console.error('Error:', err);
+          this.cdr.detectChanges();
+        });
       }
     });
   }
