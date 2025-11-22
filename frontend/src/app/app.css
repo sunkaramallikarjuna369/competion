@@ -75,6 +75,13 @@
   padding: 2rem;
 }
 
+.text-boxes-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -85,6 +92,7 @@ label {
   color: #2d3748;
   margin-bottom: 0.5rem;
   font-size: 1rem;
+  cursor: help;
 }
 
 .textarea {
@@ -107,6 +115,25 @@ label {
   margin-top: 0.5rem;
   font-size: 0.875rem;
   color: #718096;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-icon-small {
+  background: transparent;
+  border: 1px solid #667eea;
+  color: #667eea;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.3s;
+}
+
+.btn-icon-small:hover {
+  background: #667eea;
+  color: white;
 }
 
 .level-buttons {
@@ -399,6 +426,10 @@ label {
 @media (max-width: 768px) {
   .title {
     font-size: 1.75rem;
+  }
+
+  .text-boxes-container {
+    grid-template-columns: 1fr;
   }
 
   .level-buttons {

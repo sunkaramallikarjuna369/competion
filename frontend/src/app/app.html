@@ -18,28 +18,56 @@
       </div>
 
       <div class="card-body">
-        <div class="form-group">
-          <label for="inputText">Input Text</label>
-          <textarea
-            id="inputText"
-            [(ngModel)]="inputText"
-            placeholder="Paste your complex text here..."
-            rows="8"
-            class="textarea"
-          ></textarea>
-          <div class="text-info">
-            <span *ngIf="inputText">{{ inputText.split(' ').length }} words</span>
+        <div class="text-boxes-container">
+          <div class="form-group">
+            <label for="inputText" title="Paste your complex text here">Input Text 📝</label>
+            <textarea
+              id="inputText"
+              [(ngModel)]="inputText"
+              placeholder="Paste your complex text here..."
+              rows="8"
+              class="textarea"
+              title="Enter the complex text you want to simplify"
+            ></textarea>
+            <div class="text-info">
+              <span *ngIf="inputText">{{ inputText.split(' ').length }} words</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="outputText" title="AI-generated simplified version">Simplified Text ✨</label>
+            <textarea
+              id="outputText"
+              [value]="simplifiedText"
+              placeholder="Simplified text will appear here..."
+              rows="8"
+              class="textarea"
+              readonly
+              title="The simplified version of your text"
+            ></textarea>
+            <div class="text-info">
+              <span *ngIf="simplifiedText">{{ simplifiedText.split(' ').length }} words</span>
+              <button 
+                *ngIf="simplifiedText" 
+                (click)="copyToClipboard(simplifiedText)" 
+                class="btn-icon-small"
+                title="Copy simplified text to clipboard"
+              >
+                📋 Copy
+              </button>
+            </div>
           </div>
         </div>
 
         <div class="form-group">
-          <label>Reading Level</label>
+          <label title="Choose the reading level for simplification">Reading Level 📚</label>
           <div class="level-buttons">
             <button
               *ngFor="let level of levels"
               [class.active]="selectedLevel === level.value"
               (click)="selectedLevel = level.value"
               class="level-button"
+              [title]="level.description"
             >
               <div class="level-label">{{ level.label }}</div>
               <div class="level-description">{{ level.description }}</div>
@@ -70,29 +98,20 @@
         </div>
 
         <div *ngIf="showResult" class="result-section">
-          <div class="result-header">
-            <h3>Simplified Text</h3>
-            <button (click)="copyToClipboard(simplifiedText)" class="btn-icon">
-              📋 Copy
-            </button>
-          </div>
-          <div class="result-content">
-            <p>{{ simplifiedText }}</p>
-          </div>
           <div class="result-stats">
-            <div class="stat">
+            <div class="stat" title="Target reading level for the simplified text">
               <span class="stat-label">Reading Level:</span>
               <span class="stat-value">{{ readingLevel }}</span>
             </div>
-            <div class="stat">
+            <div class="stat" title="Number of words in the original text">
               <span class="stat-label">Original Words:</span>
               <span class="stat-value">{{ wordCountOriginal }}</span>
             </div>
-            <div class="stat">
+            <div class="stat" title="Number of words in the simplified text">
               <span class="stat-label">Simplified Words:</span>
               <span class="stat-value">{{ wordCountSimplified }}</span>
             </div>
-            <div class="stat">
+            <div class="stat" title="Percentage reduction in word count">
               <span class="stat-label">Reduction:</span>
               <span class="stat-value" [class.positive]="wordCountSimplified < wordCountOriginal">
                 {{ wordCountOriginal > 0 ? ((1 - wordCountSimplified / wordCountOriginal) * 100).toFixed(1) : 0 }}%

@@ -21,8 +21,8 @@ app.add_middleware(
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY", ""))
 
-MODEL = os.getenv("MODEL", "gpt-4o-mini")  # Default to faster model
-MAX_TOKENS = int(os.getenv("MAX_TOKENS", "200"))  # Reduced for faster responses
+MODEL = os.getenv("MODEL", "gpt-3.5-turbo")
+MAX_TOKENS = int(os.getenv("MAX_TOKENS", "200"))
 
 class SimplifyRequest(BaseModel):
     text: str
