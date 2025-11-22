@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { timeout, finalize } from 'rxjs';
 
 interface SimplifyResponse {
   original_text: string;
@@ -16,7 +17,7 @@ interface SimplifyResponse {
   selector: 'app-root',
   imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
 export class App {
   protected readonly title = signal('Accessibility Text Simplifier');
@@ -57,7 +58,7 @@ export class App {
   
   constructor(private http: HttpClient) {}
   
-  async simplifyText() {
+  simplifyText() {
     if (!this.inputText.trim()) {
       this.error = 'Please enter some text to simplify';
       return;
@@ -67,28 +68,32 @@ export class App {
     this.error = '';
     this.showResult = false;
     
-    try {
-      const response = await this.http.post<SimplifyResponse>(
-        `${this.apiUrl}/api/simplify`,
-        {
-          text: this.inputText,
-          level: this.selectedLevel
-        }
-      ).toPromise();
-      
-      if (response) {
+    this.http.post<SimplifyResponse>(
+      `${this.apiUrl}/api/simplify`,
+      {
+        text: this.inputText,
+        level: this.selectedLevel
+      }
+    )
+    .pipe(
+      timeout(20000),
+      finalize(() => {
+        this.isLoading = false;
+      })
+    )
+    .subscribe({
+      next: (response) => {
         this.simplifiedText = response.simplified_text;
         this.wordCountOriginal = response.word_count_original;
         this.wordCountSimplified = response.word_count_simplified;
         this.readingLevel = response.reading_level;
         this.showResult = true;
+      },
+      error: (err: any) => {
+        this.error = err?.error?.detail || 'Failed to simplify text. Please check if the backend is running and OpenAI API key is configured.';
+        console.error('Error:', err);
       }
-    } catch (err: any) {
-      this.error = err.error?.detail || 'Failed to simplify text. Please check if the backend is running and OpenAI API key is configured.';
-      console.error('Error:', err);
-    } finally {
-      this.isLoading = false;
-    }
+    });
   }
   
   loadExample(example: any) {

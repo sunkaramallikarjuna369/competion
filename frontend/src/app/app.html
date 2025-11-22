@@ -38,7 +38,7 @@
             <label for="outputText" title="AI-generated simplified version">Simplified Text ✨</label>
             <textarea
               id="outputText"
-              [value]="simplifiedText"
+              [(ngModel)]="simplifiedText"
               placeholder="Simplified text will appear here..."
               rows="8"
               class="textarea"
