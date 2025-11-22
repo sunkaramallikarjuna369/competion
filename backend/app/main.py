@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 import os
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -19,6 +20,9 @@ app.add_middleware(
 )
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY", ""))
+
+MODEL = os.getenv("MODEL", "gpt-4o-mini")  # Default to faster model
+MAX_TOKENS = int(os.getenv("MAX_TOKENS", "200"))  # Reduced for faster responses
 
 class SimplifyRequest(BaseModel):
     text: str
@@ -70,6 +74,7 @@ async def simplify_text(request: SimplifyRequest):
 - Active voice
 - Concrete examples
 - No jargon or technical terms
+- Keep output under 150 words and 3-5 short sentences
 
 Original text: {text}
 
@@ -80,6 +85,7 @@ Simplified version:""",
 - Active voice mostly
 - Explain any necessary technical terms
 - Break down complex ideas
+- Keep output under 150 words and 3-5 sentences
 
 Original text: {text}
 
@@ -90,6 +96,7 @@ Simplified version:""",
 - Explain technical terms when used
 - Maintain accuracy while improving clarity
 - Remove unnecessary complexity
+- Keep output under 150 words and 3-5 sentences
 
 Original text: {text}
 
@@ -105,17 +112,21 @@ Simplified version:"""
     try:
         prompt = level_prompts[request.level].format(text=request.text)
         
+        start_time = time.time()
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model=MODEL,
             messages=[
-                {"role": "system", "content": "You are an expert at simplifying complex text to make it accessible to different reading levels. Preserve the core meaning while making it easier to understand."},
+                {"role": "system", "content": "You are an expert at simplifying complex text to make it accessible to different reading levels. Preserve the core meaning while making it easier to understand. Be concise."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=1000
+            max_tokens=MAX_TOKENS
         )
+        latency_ms = int((time.time() - start_time) * 1000)
         
         simplified_text = response.choices[0].message.content.strip()
+        
+        print(f"Simplification completed in {latency_ms}ms using model {MODEL}")
         
         return SimplifyResponse(
             original_text=request.text,
