@@ -1,0 +1,161 @@
+<div class="container">
+  <header class="header">
+    <div class="header-content">
+      <h1 class="title">♿ Accessibility Text Simplifier</h1>
+      <p class="subtitle">Making complex text understandable for everyone</p>
+      <p class="description">
+        AI-powered tool that simplifies complex text for people with learning disabilities, 
+        non-native speakers, students, and anyone who needs clearer communication.
+      </p>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="card">
+      <div class="card-header">
+        <h2>Simplify Your Text</h2>
+        <p>Paste complex text below and choose your reading level</p>
+      </div>
+
+      <div class="card-body">
+        <div class="form-group">
+          <label for="inputText">Input Text</label>
+          <textarea
+            id="inputText"
+            [(ngModel)]="inputText"
+            placeholder="Paste your complex text here..."
+            rows="8"
+            class="textarea"
+          ></textarea>
+          <div class="text-info">
+            <span *ngIf="inputText">{{ inputText.split(' ').length }} words</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Reading Level</label>
+          <div class="level-buttons">
+            <button
+              *ngFor="let level of levels"
+              [class.active]="selectedLevel === level.value"
+              (click)="selectedLevel = level.value"
+              class="level-button"
+            >
+              <div class="level-label">{{ level.label }}</div>
+              <div class="level-description">{{ level.description }}</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button
+            (click)="simplifyText()"
+            [disabled]="isLoading || !inputText.trim()"
+            class="btn btn-primary"
+          >
+            <span *ngIf="!isLoading">✨ Simplify Text</span>
+            <span *ngIf="isLoading">⏳ Simplifying...</span>
+          </button>
+          <button
+            (click)="clearText()"
+            [disabled]="isLoading"
+            class="btn btn-secondary"
+          >
+            🗑️ Clear
+          </button>
+        </div>
+
+        <div *ngIf="error" class="error-message">
+          ⚠️ {{ error }}
+        </div>
+
+        <div *ngIf="showResult" class="result-section">
+          <div class="result-header">
+            <h3>Simplified Text</h3>
+            <button (click)="copyToClipboard(simplifiedText)" class="btn-icon">
+              📋 Copy
+            </button>
+          </div>
+          <div class="result-content">
+            <p>{{ simplifiedText }}</p>
+          </div>
+          <div class="result-stats">
+            <div class="stat">
+              <span class="stat-label">Reading Level:</span>
+              <span class="stat-value">{{ readingLevel }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Original Words:</span>
+              <span class="stat-value">{{ wordCountOriginal }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Simplified Words:</span>
+              <span class="stat-value">{{ wordCountSimplified }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Reduction:</span>
+              <span class="stat-value" [class.positive]="wordCountSimplified < wordCountOriginal">
+                {{ wordCountOriginal > 0 ? ((1 - wordCountSimplified / wordCountOriginal) * 100).toFixed(1) : 0 }}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="examples-section">
+      <h3>Try These Examples</h3>
+      <div class="examples-grid">
+        <div
+          *ngFor="let example of exampleTexts"
+          (click)="loadExample(example)"
+          class="example-card"
+        >
+          <h4>{{ example.title }}</h4>
+          <p>{{ example.text.substring(0, 100) }}...</p>
+          <button class="btn-link">Load Example →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h3>Who Benefits from This Tool?</h3>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">🎓</div>
+          <h4>Students</h4>
+          <p>Understand complex academic texts and study materials more easily</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🌍</div>
+          <h4>Non-Native Speakers</h4>
+          <p>Comprehend documents in their second or third language</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">♿</div>
+          <h4>Learning Disabilities</h4>
+          <p>Access information that would otherwise be too complex</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">👴</div>
+          <h4>Elderly</h4>
+          <p>Read legal, medical, and technical documents with clarity</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">⚖️</div>
+          <h4>Legal Documents</h4>
+          <p>Understand contracts, terms, and legal language</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🏥</div>
+          <h4>Medical Information</h4>
+          <p>Comprehend health information and medical instructions</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Built with ❤️ for accessibility | Powered by AI</p>
+  </footer>
+</div>
